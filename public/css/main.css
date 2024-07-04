@@ -7,6 +7,9 @@ body {
 main {
   padding: 1rem;
 }
+.centered {
+  text-align: center;
+}
 
 .main-header {
   width: 100%;
@@ -41,5 +44,20 @@ main {
 .main-header__item a:hover,
 .main-header__item a:active,
 .main-header__item a.active {
+  color: rgb(255, 227, 134);
+}
+
+.btn {
+  font: inherit;
+  border: 1px solid #3e00a1;
   color: #3e00a1;
+  background: white;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.btn:hover,
+.btn:active {
+  background-color: #3e00a1;
+  color: white;
 }
