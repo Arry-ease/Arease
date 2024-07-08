@@ -8,6 +8,19 @@
     <%- include('../includes/navigation.ejs') %>
 
     <main>
+      <% if(products.length > 0){ %>
+      
+      <ul>
+        <% products.forEach(p => {%>
+          <li> <%=p.productData.title %>(<%= p.qty %>)</li>
+
+
+        <%})%>
+      </ul>
+      
+      <%}else{%>
+        
+      <%}%>
       
     </main>
     <%- include('../includes/end.ejs') %>
