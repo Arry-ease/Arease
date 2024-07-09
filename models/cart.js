@@ -13,7 +13,9 @@ module.exports = class Cart {
     fs.readFile(p, (err, fileContent) => {
       let cart = { products: [], totalPrice: 0 };
       if (!err) {
+        console.log(JSON.parse(fileContent));
         cart = JSON.parse(fileContent);
+        console.log("hola" + cart.products);
       }
       // Analyze the cart => Find existing product
       const existingProductIndex = cart.products.findIndex(
@@ -45,6 +47,7 @@ module.exports = class Cart {
       }
       const updatedCart = { ...JSON.parse(fileContent) };
       const product = updatedCart.products.find((prod) => prod.id === id);
+      
       if (!product) {
         return;
       }
