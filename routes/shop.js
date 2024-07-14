@@ -1,6 +1,10 @@
+const path = require("path");
+
 const express = require("express");
+
+const shopController = require("../controllers/shop");
+
 const router = express.Router();
-const shopController = require("../controller/shop.js");
 
 router.get("/", shopController.getIndex);
 
