@@ -60,10 +60,10 @@ exports.getCart = async (req, res, next) => {
 
     const products = cart.items.map((item) => {
       return {
-        productId: item.productId._id,
-        title: item.productId.title,
-        price: item.productId.price,
-        quantity: item.quantity,
+        productId: item?.productId?._id,
+        title: item?.productId?.title,
+        price: item?.productId?.price,
+        quantity: item?.quantity,
       };
     });
     console.log("holaaa---");
