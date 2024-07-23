@@ -81,13 +81,21 @@ exports.getCart = async (req, res, next) => {
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
+
   Product.findById(prodId)
     .then((product) => {
+      if (!product) {
+        return res.status(404).send("Product not found");
+      }
       return req.user.addToCart(product);
     })
     .then((result) => {
       console.log(result);
       res.redirect("/cart");
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Server Error");
     });
 };
 

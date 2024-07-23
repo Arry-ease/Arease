@@ -1,46 +1,61 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Cart = require("./cart");
 
 const userSchema = new Schema({
   name: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
-    required: true
+    required: true,
   },
   cart: {
     type: Schema.Types.ObjectId,
-    ref: 'Cart'
-  }
+    ref: "Cart",
+  },
 });
+userSchema.methods.addToCart = function (product) {
+  return Cart.findOne({ userId: this._id }).then((cart) => {
+    if (cart) {
+      // Cart already exists, update it
+      const existingProductIndex = cart.items.findIndex(
+        (item) => item.productId.toString() === product._id.toString()
+      );
 
-userSchema.methods.addToCart = async function(product) {
-  let cart = await mongoose.model('Cart').findOne({ userId: this._id });
-  if (!cart) {
-    cart = new (mongoose.model('Cart'))({ userId: this._id, items: [] });
-  }
+      if (existingProductIndex >= 0) {
+        // Product already in cart, update quantity
+        cart.items[existingProductIndex].quantity += 1;
+      } else {
+        // Product not in cart, add new item
+        cart.items.push({ productId: product._id, quantity: 1 });
+      }
 
-  const cartProductIndex = cart.items.findIndex(cp => cp.productId.toString() === product._id.toString());
-  let newQuantity = 1;
-  if (cartProductIndex >= 0) {
-    newQuantity = cart.items[cartProductIndex].quantity + 1;
-    cart.items[cartProductIndex].quantity = newQuantity;
-  } else {
-    cart.items.push({
-      productId: product._id,
-      quantity: newQuantity
-    });
-  }
+      return cart.save();
+    } else {
+      // Create a new cart
+      const newCart = new Cart({
+        userId: this._id,
+        items: [{ productId: product._id, quantity: 1 }],
+      });
 
-  await cart.save();
-  this.cart = cart._id;
-  await this.save();
-  return cart;
+      return newCart.save().then((cart) => {
+        // Update the user's cart reference
+        this.cart = cart._id;
+        return this.save();
+      });
+    }
+  });
 };
 
-module.exports = mongoose.model('User', userSchema);
+userSchema.methods.removeFromCart = function () {
+  const updatedCartItems = this.cart.items.filter((item) => {
+    return item.productId.toString() !== productId.toString();
+  });
+};
+
+module.exports = mongoose.model("User", userSchema);
 
 // const mongodb = require('mongodb');
 // const getDb = require('../util/database').getDb;
