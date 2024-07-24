@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const Cart = require("../models/cart");
 
 exports.getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -93,11 +94,45 @@ exports.getProducts = (req, res, next) => {
 
 exports.postDeleteProduct = (req, res, next) => {
   const prodId = req.body.productId;
-  Product.findByIdAndDelete(prodId)
 
+  Product.findByIdAndDelete(prodId)
     .then((result) => {
       console.log("Destroyed product");
+      return Cart.updateMany({}, { $pull: { items: { productId: prodId } } });
+    })
+    .then((result) => {
+      console.log("Updated cart");
       res.redirect("/admin/products");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      res.status(500).send("Server Error");
+    });
 };
+
+// exports.postDeleteProduct = (req, res, next) => {
+//   const prodId = req.body.productId;
+
+//   Product.findByIdAndDelete(prodId)
+//     .then((result) => {
+//       if (!result) {
+//         return res.status(404).send("Product not found");
+//       }
+
+//       console.log("Destroyed product");
+
+//       // Remove the product from all carts
+//       return Cart.updateMany(
+//         {},
+//         { $pull: { items: { productId: prodId } } }
+//       );
+//     })
+//     .then(() => {
+//       console.log("Updated carts");
+//       res.redirect("/admin/products");
+//     })
+//     .catch((err) => {
+//       console.error(err);
+//       res.status(500).send("Server Error");
+//     });
+// };

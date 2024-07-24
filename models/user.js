@@ -49,10 +49,25 @@ userSchema.methods.addToCart = function (product) {
   });
 };
 
-userSchema.methods.removeFromCart = function () {
-  const updatedCartItems = this.cart.items.filter((item) => {
-    return item.productId.toString() !== productId.toString();
-  });
+userSchema.methods.removeFromCart = function (productId) {
+  return Cart.findOne({ userId: this._id })
+    .then((cart) => {
+      if (!cart) {
+        throw new Error("Cart not found");
+      }
+
+      const updatedCartItems = cart.items.filter((item) => {
+        return item.productId.toString() !== productId.toString();
+      });
+
+      cart.items = updatedCartItems;
+      return cart.save();
+    })
+
+    .catch((err) => {
+      console.error(err);
+      throw err;
+    });
 };
 
 module.exports = mongoose.model("User", userSchema);
