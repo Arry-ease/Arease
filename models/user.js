@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const Cart = require("./cart");
+const Order = require("./order");
 
 const userSchema = new Schema({
   name: {
@@ -69,8 +70,25 @@ userSchema.methods.removeFromCart = function (productId) {
       throw err;
     });
 };
+userSchema.methods.clearCart = function () {
+  Cart.findOne({ userId: this._id })
+    .then((cart) => {
+      if (!cart) {
+        throw new Error("cart not found");
+      }
+      cart.items = [];
+      return cart.save();
+    })
+    .catch((err) => {
+      console.log("thre is an error");
+      throw err;
+    });
+};
 
 module.exports = mongoose.model("User", userSchema);
+// userSchema.methods.getOrders = function () {
+//   return Order.find({ "user.userId": this._id });
+// };
 
 // const mongodb = require('mongodb');
 // const getDb = require('../util/database').getDb;
